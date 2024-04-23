@@ -18,7 +18,9 @@ async function startApp() {
         'Add a role',
         'Delete a role',
         'Add an employee',
-        'Update an employee role'
+        'Delete an employee',
+        'Update an employee role',
+        'View department budget'
       ]
     });
 
@@ -150,6 +152,24 @@ async function startApp() {
             console.error('Failed to add employee.' , error.message);
         }
           break;
+        case 'Delete an employee':
+          try {
+            const employees = await db.getAllEmployees();
+            const { employeeId } = await inquirer.prompt({
+              type: 'list',
+              name: 'employeeId',
+              message: 'Select an employee to delete:',
+              choices: employees.map(employee => ({
+                name: `${employee.first_name} ${employee.last_name}`,
+                value: employee.id
+              }))
+            });
+            await db.deleteEmployee(employeeId);
+            console.log('Employee deleted successfully!');
+          } catch (error) {
+            console.error('Error deleting employee:', error);
+          }
+        break;
 
         case 'Update an employee role':
         console.log('hello');
@@ -189,6 +209,28 @@ async function startApp() {
           console.error('Error updating employee role:', error);
       }
         break;
+        case 'View department budget':
+          try {
+            const departments = await db.getAllDepartments();
+            const departmentChoices = departments.map(department => ({
+              name: department.name,
+              value: department.id
+            }));
+
+            const { departmentId } = await inquirer.prompt({
+              type: 'list',
+              name: 'departmentId',
+              message: 'Select a department:',
+              choices: departmentChoices
+            });
+
+            const totalBudget = await db.TotalBudgetByDepartment(departmentId);
+            console.log(`Total budget for the department: $${totalBudget}`);
+          } catch (error) {
+            console.error('Error:', error.message);
+          }
+          break;
+
 
     }
     const { userReturn} = await inquirer.prompt({

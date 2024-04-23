@@ -62,14 +62,25 @@ class DB {
       [firstName, lastName, roleId, managerId]
     );
   }
-
+  async deleteEmployee(employeeId) {
+    await this.query('DELETE FROM employees WHERE id = $1', [employeeId]);
+  }
+  
   async updateEmployeeRole(employeeId, roleId) {
     await this.query('UPDATE employees SET role_id = $1 WHERE id = $2', [
       roleId,
       employeeId,
     ]);
   }
-
+  async TotalBudgetByDepartment(departmentId) {
+    const result = await this.query(
+      'SELECT SUM(roles.salary) AS total_budget FROM employees JOIN roles ON employees.role_id = roles.id WHERE roles.department_id = $1',
+      [departmentId]
+    );
+    return result.rows[0].total_budget || 0; // Return 0 if no employees or budget found
+  }
+  
+  
   async query(sql, args = []) {
     const client = await pool.connect();
     try {
