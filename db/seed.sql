@@ -1,4 +1,3 @@
--- Connect to the database
 \c employees
 
 INSERT INTO departments (name) VALUES ('chefs');

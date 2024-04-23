@@ -18,12 +18,31 @@ class DB {
   
 
   async getAllEmployees() {
-    const result = await this.query('SELECT * FROM employees');
+    const result = await this.query(`
+      SELECT 
+        employees.id, 
+        employees.first_name, 
+        employees.last_name, 
+        roles.title AS role,
+        departments.name AS department,
+        roles.salary,
+        CONCAT(manager.first_name, ' ', manager.last_name) AS manager
+      FROM 
+        employees 
+        LEFT JOIN roles ON employees.role_id = roles.id
+        LEFT JOIN departments ON roles.department_id = departments.id
+        LEFT JOIN employees AS manager ON employees.manager_id = manager.id;
+    `);
     return result.rows;
   }
+  
 
   async addDepartment(name) {
     await this.query('INSERT INTO departments (name) VALUES ($1)', [name]);
+  }
+
+  async deleteDepartment(departmentId) {
+    await this.query('DELETE FROM departments WHERE id = $1', [departmentId]);
   }
 
   async addRole(title, salary, departmentId) {
@@ -32,6 +51,10 @@ class DB {
       [title, salary, departmentId]
     );
   }
+  async deleteRole(roleId) {
+    await this.query('DELETE FROM roles WHERE id = $1', [roleId]);
+  }
+  
 
   async addEmployee(firstName, lastName, roleId, managerId) {
     await this.query(

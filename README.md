@@ -10,7 +10,6 @@ Employee Tracker is a command-line application that allows business owners to vi
 - Update an employee's role or manager
 - Remove departments, roles, and employees
 - View department-wise employee listings
-- View total utilized budget by department
 
 
 # Installation
